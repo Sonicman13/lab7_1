@@ -96,6 +96,8 @@ public:
         return name;
     }
     Store operator + (Store store);
+    void getNumber(int* number);
+    void getNumber(int& number);
 };
 
 
@@ -194,13 +196,24 @@ Store Store::operator + (Store store) {
     }
     return newStore;
 }
+
+void Store::getNumber(int *number)
+{
+    *number = numberOfItems;
+}
+
+void Store::getNumber(int& number)
+{
+    number = numberOfItems;
+}
+
 int main()
 {
     setlocale(LC_ALL, "RUS");
     SetConsoleCP(1251);
     SetConsoleOutputCP(1251);
     class Store store1[10], * store2, * store3[10];
-    int amountDifference, numberOfItems, itemAmount[N], i, max, n;
+    int amountDifference, numberOfItems, itemAmount[N], i, max, n, *g;
     double price, itemPrice[N];
     char f;
     string s, s1[N], code, name, adress, itemCode[N], itemName[N];
@@ -209,7 +222,7 @@ int main()
     printf("\n");
 
     //Переменная
-
+    g = (int*)malloc(sizeof(int));
     if (f == '1') {
         s = "-";
         s1[0] = "-";
@@ -249,7 +262,7 @@ int main()
         i = 0;
         max = 1;
         f = '1';
-        while (f != '9') {
+        while (f != '10') {
             store1[i].displayName();
             printf("\nВведите номер следующего действия:\n");
             printf("1 - показать информацию о магазине\n");
@@ -260,7 +273,8 @@ int main()
             printf("6 - показать все магазины\n");
             printf("7 - сменить магазин\n");
             printf("8 - сложить магазины\n");
-            printf("9 - выйти\n");
+            printf("9 - показать колличество товаров\n");
+            printf("10 - выйти\n");
             f = _getche();
             if (f == '1') {
                 store1[i].display();
@@ -317,6 +331,20 @@ int main()
                     }
                 }
             }
+            else if (f == '9') {
+                printf("\n1 - out, 0 - ref\n");
+                getline(cin, s);
+                if (s == "1")
+                {
+                    store1[i].getNumber(g);
+                    printf("%d\n", *g);
+                }
+                else
+                {
+                    store1[i].getNumber(&n);
+                    printf("%d\n", n);
+                }
+            }
         }
     }
 
@@ -362,7 +390,7 @@ int main()
         i = 0;
         max = 1;
         f = '1';
-        while (f != '9') {
+        while (f != '10') {
             store2[i].displayName();
             printf("\nВведите номер следующего действия:\n");
             printf("1 - показать информацию о магазине\n");
@@ -373,7 +401,8 @@ int main()
             printf("6 - показать все магазины\n");
             printf("7 - сменить магазин\n");
             printf("8 - сложить магазины\n");
-            printf("9 - выйти\n");
+            printf("9 - показать колличество товаров\n");
+            printf("10 - выйти\n");
             f = _getche();
             if (f == '1') {
                 store2[i].display();
@@ -430,6 +459,20 @@ int main()
                     }
                 }
             }
+            else if (f == '9') {
+                printf("\n1 - out, 0 - ref\n");
+                getline(cin, s);
+                if (s == "1")
+                {
+                    store2[i].getNumber(g);
+                    printf("%d\n", *g);
+                }
+                else
+                {
+                    store2[i].getNumber(&n);
+                    printf("%d\n", n);
+                }
+            }
         }
         delete[] store2;
     }
@@ -476,7 +519,7 @@ int main()
         i = 0;
         max = 1;
         f = '1';
-        while (f != '9') {
+        while (f != '10') {
             store3[i]->displayName();
             printf("\nВведите номер следующего действия:\n");
             printf("1 - показать информацию о магазине\n");
@@ -487,7 +530,8 @@ int main()
             printf("6 - показать все магазины\n");
             printf("7 - сменить магазин\n");
             printf("8 - сложить магазины\n");
-            printf("9 - выйти\n");
+            printf("9 - показать колличество товаров\n");
+            printf("10 - выйти\n");
             f = _getche();
             if (f == '1') {
                 store3[i]->display();
@@ -543,6 +587,20 @@ int main()
                         *store3[i] = *store3[i] + *store3[n];
                         n = max;
                     }
+                }
+            }
+            else if (f == '9') {
+                printf("\n1 - out, 0 - ref\n");
+                getline(cin, s);
+                if (s == "1")
+                {
+                    store3[i]->getNumber(g);
+                    printf("%d\n", *g);
+                }
+                else
+                {
+                    store3[i]->getNumber(&n);
+                    printf("%d\n", n);
                 }
             }
         }
