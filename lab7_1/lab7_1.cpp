@@ -91,7 +91,10 @@ public:
     void priceChange(string item1, double price);
     void amountChange(string item1, int amountDifference);
     void displayName();
-    int storecmp(string name1);
+    friend int storecmp(string name1, Store store);
+    string getName() {
+        return name;
+    }
 };
 
 
@@ -170,9 +173,10 @@ void Store::displayName() {
     cout << name << endl;
 }
 
-int Store::storecmp(string name1) {
-    return name1 == name;
+int storecmp(string name1, Store store) {
+    return name1 == store.getName();
 }
+
 int main()
 {
     setlocale(LC_ALL, "RUS");
@@ -279,7 +283,7 @@ int main()
                 printf("\nВведите название магазина\n");
                 getline(cin, name);
                 for (n = 0; n < max; n++) {
-                    if (store1[n].storecmp(name) == 1) {
+                    if (storecmp(name, store1[n]) == 1) {
                         i = n;
                         n = max;
                     }
@@ -381,7 +385,7 @@ int main()
                 printf("\nВведите название магазина\n");
                 getline(cin, name);
                 for (n = 0; n < max; n++) {
-                    if (store2[n].storecmp(name) == 1) {
+                    if (storecmp(name, store2[n]) == 1) {
                         i = n;
                         n = max;
                     }
@@ -485,7 +489,7 @@ int main()
                 printf("\nВведите название магазина\n");
                 getline(cin, name);
                 for (n = 0; n < max; n++) {
-                    if (store3[n]->storecmp(name) == 1) {
+                    if (storecmp(name, *store3[n]) == 1) {
                         i = n;
                         n = max;
                     }
