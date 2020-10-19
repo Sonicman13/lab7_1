@@ -95,6 +95,7 @@ public:
     string getName() {
         return name;
     }
+    Store operator + (Store store);
 };
 
 
@@ -177,6 +178,22 @@ int storecmp(string name1, Store store) {
     return name1 == store.getName();
 }
 
+Store Store::operator + (Store store) {
+    int n, i;
+    Store newStore;
+    newStore.name = this->name;
+    newStore.adress = this->adress;
+    newStore.numberOfItems = this->numberOfItems + store.numberOfItems;
+    for (n = 0; n < this->numberOfItems; n++) {
+        newStore.item[n] = this->item[n];
+    }
+    i = this->numberOfItems;
+    for (n = 0; n < store.numberOfItems; n++) {
+        newStore.item[i] = store.item[n];
+        i++;
+    }
+    return newStore;
+}
 int main()
 {
     setlocale(LC_ALL, "RUS");
@@ -232,7 +249,7 @@ int main()
         i = 0;
         max = 1;
         f = '1';
-        while (f != '8') {
+        while (f != '9') {
             store1[i].displayName();
             printf("\nВведите номер следующего действия:\n");
             printf("1 - показать информацию о магазине\n");
@@ -242,7 +259,8 @@ int main()
             printf("5 - Добавить магазин\n");
             printf("6 - показать все магазины\n");
             printf("7 - сменить магазин\n");
-            printf("8 - выйти\n");
+            printf("8 - сложить магазины\n");
+            printf("9 - выйти\n");
             f = _getche();
             if (f == '1') {
                 store1[i].display();
@@ -285,6 +303,16 @@ int main()
                 for (n = 0; n < max; n++) {
                     if (storecmp(name, store1[n]) == 1) {
                         i = n;
+                        n = max;
+                    }
+                }
+            }
+            else if (f == '8') {
+                printf("\nВведите название магазина\n");
+                getline(cin, name);
+                for (n = 0; n < max; n++) {
+                    if (storecmp(name, store1[n]) == 1) {
+                        store1[i] = store1[i] + store1[n];
                         n = max;
                     }
                 }
@@ -334,7 +362,7 @@ int main()
         i = 0;
         max = 1;
         f = '1';
-        while (f != '8') {
+        while (f != '9') {
             store2[i].displayName();
             printf("\nВведите номер следующего действия:\n");
             printf("1 - показать информацию о магазине\n");
@@ -344,7 +372,8 @@ int main()
             printf("5 - Добавить магазин\n");
             printf("6 - показать все магазины\n");
             printf("7 - сменить магазин\n");
-            printf("8 - выйти\n");
+            printf("8 - сложить магазины\n");
+            printf("9 - выйти\n");
             f = _getche();
             if (f == '1') {
                 store2[i].display();
@@ -387,6 +416,16 @@ int main()
                 for (n = 0; n < max; n++) {
                     if (storecmp(name, store2[n]) == 1) {
                         i = n;
+                        n = max;
+                    }
+                }
+            }
+            else if (f == '8') {
+                printf("\nВведите название магазина\n");
+                getline(cin, name);
+                for (n = 0; n < max; n++) {
+                    if (storecmp(name, store2[n]) == 1) {
+                        store2[i] = store2[i] + store2[n];
                         n = max;
                     }
                 }
@@ -437,7 +476,7 @@ int main()
         i = 0;
         max = 1;
         f = '1';
-        while (f != '8') {
+        while (f != '9') {
             store3[i]->displayName();
             printf("\nВведите номер следующего действия:\n");
             printf("1 - показать информацию о магазине\n");
@@ -447,7 +486,8 @@ int main()
             printf("5 - Добавить магазин\n");
             printf("6 - показать все магазины\n");
             printf("7 - сменить магазин\n");
-            printf("8 - выйти\n");
+            printf("8 - сложить магазины\n");
+            printf("9 - выйти\n");
             f = _getche();
             if (f == '1') {
                 store3[i]->display();
@@ -491,6 +531,16 @@ int main()
                 for (n = 0; n < max; n++) {
                     if (storecmp(name, *store3[n]) == 1) {
                         i = n;
+                        n = max;
+                    }
+                }
+            }
+            else if (f == '8') {
+                printf("\nВведите название магазина\n");
+                getline(cin, name);
+                for (n = 0; n < max; n++) {
+                    if (storecmp(name, *store3[n]) == 1) {
+                        *store3[i] = *store3[i] + *store3[n];
                         n = max;
                     }
                 }
