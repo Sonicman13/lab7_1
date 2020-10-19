@@ -45,11 +45,11 @@ void Item::read() {
     } while (amount < 0);
 }
 
-void Item::init(string code1, string name1, double price1, int amount1) {
-    name = name1;
-    code = code1;
-    price = price1;
-    amount = amount1;
+void Item::init(string code, string name, double price, int amount) {
+    this->name = name;
+    this->code = code;
+    this->price = price;
+    this->amount = amount;
 }
 
 void Item::display() {
@@ -61,12 +61,12 @@ void Item::display() {
     printf("Колличество: %d\n", amount);
 }
 
-void Item::setPrice(double price1) {
-    price = price1;
+void Item::setPrice(double price) {
+    this->price = price;
 }
 
-void Item::setAmount(int amount1) {
-    amount = amount1;
+void Item::setAmount(int amount) {
+    this->amount = amount;
 }
 
 string Item::getCode() {
@@ -114,11 +114,11 @@ void Store::read() {
     }
 }
 
-void Store::init(string name1, string adress1, int numberOfItems1, string itemName1[], string itemCode1[], double itemPrice1[], int itemAmount1[]) {
+void Store::init(string name, string adress, int numberOfItems, string itemName1[], string itemCode1[], double itemPrice1[], int itemAmount1[]) {
     int i;
-    name = name1;
-    adress = adress1;
-    numberOfItems = numberOfItems1;
+    this->name = name;
+    this->adress = adress;
+    this->numberOfItems = numberOfItems;
     for (i = 0; i < numberOfItems; i++) {
         item[i].init(itemCode1[i], itemName1[i], itemPrice1[i], itemAmount1[i]);
     }
