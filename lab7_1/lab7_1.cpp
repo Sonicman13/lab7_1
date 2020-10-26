@@ -87,7 +87,7 @@ public:
     void read();
     void init(string name1, string adress1, int numberOfItems1, string itemName1[], string itemCode1[], double itemPrice1[], int itemAmount1[]);
     void display();
-    void add();
+    Store operator ++(int);
     void priceChange(string item1, double price);
     void amountChange(string item1, int amountDifference);
     void displayName();
@@ -143,10 +143,18 @@ void Store::display() {
     }
 }
 
-void Store::add() {
-    item[numberOfItems].read();
-    numberOfItems++;
+Store Store::operator ++ (int){
+    Store newStore;
+    int n;
+    newStore.name = this->name;
+    newStore.adress = this->adress;
+    for (n = 0; n < this->numberOfItems; n++) {
+        newStore.item[n] = this->item[n];
+    }
+    newStore.item[this->numberOfItems].read();
+    newStore.numberOfItems = ++this->numberOfItems;
     getchar();
+    return newStore;
 }
 
 void Store::priceChange(string item1, double price) {
@@ -280,7 +288,7 @@ int main()
                 store1[i].display();
             }
             else if (f == '2') {
-                store1[i].add();
+                store1[i] = store1[i]++;
             }
             else if (f == '3') {
                 printf("\nВведите код товара\n");
@@ -408,7 +416,7 @@ int main()
                 store2[i].display();
             }
             else if (f == '2') {
-                store2[i].add();
+                store2[i] = store2[i]++;
             }
             else if (f == '3') {
                 printf("\nВведите код товара\n");
@@ -537,7 +545,7 @@ int main()
                 store3[i]->display();
             }
             else if (f == '2') {
-                store3[i]->add();
+                *store3[i] = *store3[i]++;
             }
             else if (f == '3') {
                 printf("\nВведите код товара\n");
