@@ -22,7 +22,8 @@ private:
     int amount;
 public:
     void read();
-    void init(string code1, string name1, double price1, int amount1);
+    Item(string code, string name, double price, int amount);
+    Item();
     void display();
     void setPrice(double price1);
     void setAmount(int amount1);
@@ -45,13 +46,19 @@ void Item::read() {
     } while (amount < 0);
 }
 
-void Item::init(string code, string name, double price, int amount) {
+Item::Item(string code, string name, double price, int amount) {
     this->name = name;
     this->code = code;
     this->price = price;
     this->amount = amount;
 }
 
+Item::Item() {
+    name = "-";
+    code = "-";
+    price = 0;
+    amount = 0;
+}
 void Item::display() {
     printf("Код:");
     cout << code << endl;
@@ -86,7 +93,9 @@ private:
     class Item item[N];
 public:
     void read();
-    void init(string name1, string adress1, int numberOfItems1, string itemName1[], string itemCode1[], double itemPrice1[], int itemAmount1[]);
+    Store(string name, string adress, int numberOfItems, string itemName1[], string itemCode1[], double itemPrice1[], int itemAmount1[]);
+    Store(string name);
+    Store();
     void display();
     Store operator ++(int);
     void priceChange(string item1, double price);
@@ -123,16 +132,30 @@ void Store::read() {
     }
 }
 
-void Store::init(string name, string adress, int numberOfItems, string itemName1[], string itemCode1[], double itemPrice1[], int itemAmount1[]) {
+Store::Store(string name, string adress, int numberOfItems, string itemName1[], string itemCode1[], double itemPrice1[], int itemAmount1[]) {
     int i;
+    Item* item1;
     if (numberOfItems <= Store::maxNumberOfItems) {
         this->name = name;
         this->adress = adress;
         this->numberOfItems = numberOfItems;
         for (i = 0; i < numberOfItems; i++) {
-            item[i].init(itemCode1[i], itemName1[i], itemPrice1[i], itemAmount1[i]);
+            item1 = new Item(itemCode1[i], itemName1[i], itemPrice1[i], itemAmount1[i]);
+            item[i] = *item1;
         }
     }
+}
+
+Store::Store(string name) {
+    this->name = name;
+    this->adress = "-";
+    this->numberOfItems = 0;
+}
+
+Store::Store() {
+    this->name = "-";
+    this->adress = "-";
+    this->numberOfItems = 0;
 }
 
 void Store::display() {
@@ -235,10 +258,10 @@ int main()
     setlocale(LC_ALL, "RUS");
     SetConsoleCP(1251);
     SetConsoleOutputCP(1251);
-    class Store store1[10], * store2;
+    string s, s1[N], code, name, adress, itemCode[N], itemName[N], f, a = "123";
+    class Store store1[10], * store2, store3[5] = { a,a,a,a,a };
     int amountDifference, numberOfItems, itemAmount[N], i, max, n, *g;
     double price, itemPrice[N];
-    string s, s1[N], code, name, adress, itemCode[N], itemName[N], f;
     printf("Работать с переменной, указателем или указателем на массив?(1 - переменная, 2 - указатель)\n");
     getline(cin, f);
 
@@ -253,37 +276,46 @@ int main()
             store1[0].read();
         }
         else {
-            printf("\nВведите название магазина\n");
-            getline(cin, name);
-            printf("Введите адрес магазина\n");
-            getline(cin, adress);
-            numberOfItems = 0;;
-            printf("Добавить товар?(1-да,0-нет)\n");
+            printf("Ввести все параметры (1), только название (2), не вводить ничего (3)");
             getline(cin, f);
-            while (f == "1") {
-                printf("\nВведите название товара\n");
-                getline(cin, itemName[numberOfItems]);
-                printf("Введите код товара\n");
-                getline(cin, itemCode[numberOfItems]);
-                do {
-                    printf("Введите цену\n");
-                    scanf_s("%lf", &itemPrice[numberOfItems]);
-                } while (itemPrice[numberOfItems] < 0);
-                do {
-                    printf("Введите колличество товара\n");
-                    scanf_s("%d", &itemAmount[numberOfItems]);
-                } while (itemAmount[numberOfItems] < 0);
-                numberOfItems++;
-                printf("Добавить еще один товар?(1 - да, все остальные символы - нет)\n");
+            if (f == "1") {
+                printf("\nВведите название магазина\n");
+                getline(cin, name);
+                printf("Введите адрес магазина\n");
+                getline(cin, adress);
+                numberOfItems = 0;;
+                printf("Добавить товар?(1-да,0-нет)\n");
                 getline(cin, f);
-                getchar();
+                while (f == "1") {
+                    printf("\nВведите название товара\n");
+                    getline(cin, itemName[numberOfItems]);
+                    printf("Введите код товара\n");
+                    getline(cin, itemCode[numberOfItems]);
+                    do {
+                        printf("Введите цену\n");
+                        scanf_s("%lf", &itemPrice[numberOfItems]);
+                    } while (itemPrice[numberOfItems] < 0);
+                    do {
+                        printf("Введите колличество товара\n");
+                        scanf_s("%d", &itemAmount[numberOfItems]);
+                    } while (itemAmount[numberOfItems] < 0);
+                    numberOfItems++;
+                    printf("Добавить еще один товар?(1 - да, все остальные символы - нет)\n");
+                    getline(cin, f);
+                    getchar();
+                }
+                store1[0] = Store::Store(name, adress, numberOfItems, itemName, itemCode, itemPrice, itemAmount);
             }
-            store1[0].init(name, adress, numberOfItems, itemName, itemCode, itemPrice, itemAmount);
+            else if (f == "2") {
+                printf("\nВведите название магазина\n");
+                getline(cin, name);
+                store1[0] = Store::Store(name);
+            }
         }
         i = 0;
         max = 1;
         f = "1";
-        while (f != "11") {
+        while (f != "12") {
             store1[i].displayName();
             printf("\nВведите номер следующего действия:\n");
             printf("1 - показать информацию о магазине\n");
@@ -296,7 +328,8 @@ int main()
             printf("8 - сложить магазины\n");
             printf("9 - показать колличество товаров\n");
             printf("10 - изменить колличество мест для товаров в магазине\n");
-            printf("11 - выйти\n");
+            printf("11 - показать store3\n");
+            printf("12 - выйти\n");
             getline(cin, f);
             if (f == "1") {
                 store1[i].display();
@@ -371,6 +404,13 @@ int main()
                 printf("Введите колличество\n");
                 scanf_s("%d", &numberOfItems);
                 Store::maxNumberOfItemsChange(numberOfItems);
+                getchar();
+            }
+            else if (f == "11") {
+                int i;
+                for (i = 0; i < 5; i++) {
+                    store3[i].display();
+                }
             }
         }
     }
@@ -412,7 +452,7 @@ int main()
                 getline(cin, f);
                 getchar();
             }
-            store2[0].init(name, adress, numberOfItems, itemName, itemCode, itemPrice, itemAmount);
+            store2[0] = Store::Store(name, adress, numberOfItems, itemName, itemCode, itemPrice, itemAmount);
         }
         i = 0;
         max = 1;
@@ -505,6 +545,7 @@ int main()
                 printf("Введите колличество\n");
                 scanf_s("%d", &numberOfItems);
                 Store::maxNumberOfItemsChange(numberOfItems);
+                getchar();
             }
         }
         delete[] store2;
