@@ -87,28 +87,35 @@ int Item::getAmount() {
 class Store {
 private:
     string name;
-    string adress;
-    int numberOfItems;
+    string* adress;
+    int* numberOfItems;
     static int maxNumberOfItems;
-    class Item item[N];
+    class Item item[10];
 public:
     void read();
     Store(string name, string adress, int numberOfItems, string itemName1[], string itemCode1[], double itemPrice1[], int itemAmount1[]);
     Store(string name);
     Store();
+    Store(const Store& s);
+    Store(const Store& s, int m);
+    Store operator = (Store s);
     void display();
     Store operator ++(int);
     void priceChange(string item1, double price);
     void amountChange(string item1, int amountDifference);
     void displayName();
-    friend int storecmp(string name1, Store store);
+    friend bool storecmp(string name1, Store store);
     string getName() {
         return name;
+    }
+    void setName() {
+        name = name + "1";
     }
     Store operator + (Store store);
     void getNumber(int* number);
     void getNumber(int& number);
     static void maxNumberOfItemsChange(int newMax);
+    void setAdress(string s);
 };
 
 int Store::maxNumberOfItems = 10;
@@ -119,13 +126,13 @@ void Store::read() {
     printf("\nВведите название магазина\n");
     getline(cin, name);
     printf("Введите адрес магазина\n");
-    getline(cin, adress);
-    numberOfItems = i = 0;
+    getline(cin, *adress);
+    *numberOfItems = i = 0;
     printf("Добавить товар?(1 - да, все остальные символы - нет)\n");
     f = _getche();
-    while (f == '1' && numberOfItems<Store::maxNumberOfItems) {
-        item[numberOfItems].read();
-        numberOfItems++;
+    while (f == '1' && *numberOfItems<Store::maxNumberOfItems) {
+        item[*numberOfItems].read();
+        (*numberOfItems)++;
         printf("Добавить еще один товар?(1 - да, все остальные символы -нет)\n");
         f = _getche();
         getchar();
@@ -137,8 +144,10 @@ Store::Store(string name, string adress, int numberOfItems, string itemName1[], 
     Item* item1;
     if (numberOfItems <= Store::maxNumberOfItems) {
         this->name = name;
-        this->adress = adress;
-        this->numberOfItems = numberOfItems;
+        this->adress = new string();
+        *this->adress = adress;
+        this->numberOfItems = new int();
+        *this->numberOfItems = numberOfItems;
         for (i = 0; i < numberOfItems; i++) {
             item1 = new Item(itemCode1[i], itemName1[i], itemPrice1[i], itemAmount1[i]);
             item[i] = *item1;
@@ -148,14 +157,50 @@ Store::Store(string name, string adress, int numberOfItems, string itemName1[], 
 
 Store::Store(string name) {
     this->name = name;
-    this->adress = "-";
-    this->numberOfItems = 0;
+    adress = new string();
+    *this->adress = "-";
+    numberOfItems = new int();
+    *this->numberOfItems = 0;
 }
 
 Store::Store() {
     this->name = "-";
-    this->adress = "-";
-    this->numberOfItems = 0;
+    adress = new string();
+    *this->adress = "-";
+    numberOfItems = new int();
+    *this->numberOfItems = 0;
+}
+
+Store::Store(const Store& s) {
+    name = s.name;
+    adress = new string();
+    *adress = *s.adress;
+    numberOfItems = new int();
+    *numberOfItems = *s.numberOfItems;
+    for (int i = 0; i < *numberOfItems; i++) {
+        item[i] = s.item[i];
+    }
+}
+
+Store::Store(const Store& s, int m) {
+    name = s.name;
+    adress = new string();
+    adress = s.adress;
+    numberOfItems = new int();
+    numberOfItems = s.numberOfItems;
+    for (int i = 0; i < *numberOfItems; i++) {
+        item[i] = s.item[i];
+    }
+}
+
+Store Store::operator = (Store s) {
+    name = s.name;
+    *adress = *s.adress;
+    *numberOfItems = *s.numberOfItems;
+    for (int i = 0; i < *numberOfItems; i++) {
+        item[i] = s.item[i];
+    }
+    return* this;
 }
 
 void Store::display() {
@@ -163,10 +208,10 @@ void Store::display() {
     printf("\nНазвание магазина:");
     cout << name << endl;
     printf("Адрес:");
-    cout << adress << endl;
-    printf("Колличество уникальных товаров: %d\n", numberOfItems);
+    cout << *adress << endl;
+    printf("Колличество уникальных товаров: %d\n", *numberOfItems);
     printf("Колличество мест для товаров в магазине: %d\n", Store::maxNumberOfItems);
-    for (i = 0; i < numberOfItems; i++) {
+    for (i = 0; i < *numberOfItems; i++) {
         printf("\nТовар %d\n", i + 1);
         item[i].display();
     }
@@ -175,14 +220,14 @@ void Store::display() {
 Store Store::operator ++ (int){
     Store newStore;
     int n;
-    if (this->numberOfItems < Store::maxNumberOfItems) {
+    if (*this->numberOfItems < Store::maxNumberOfItems) {
         newStore.name = this->name;
-        newStore.adress = this->adress;
-        for (n = 0; n < this->numberOfItems; n++) {
+        *newStore.adress = *this->adress;
+        for (n = 0; n < *this->numberOfItems; n++) {
             newStore.item[n] = this->item[n];
         }
-        newStore.item[this->numberOfItems].read();
-        newStore.numberOfItems = ++this->numberOfItems;
+        newStore.item[*this->numberOfItems].read();
+        *newStore.numberOfItems = ++(*this->numberOfItems);
         getchar();
         return newStore;
     }
@@ -191,10 +236,10 @@ Store Store::operator ++ (int){
 
 void Store::priceChange(string item1, double price) {
     int i = 0;
-    while (i < numberOfItems) {
+    while (i < *numberOfItems) {
         if (item[i].getCode() == item1) {
             item[i].setPrice(price);
-            i = numberOfItems;
+            i = *numberOfItems;
         }
         i++;
     }
@@ -202,10 +247,10 @@ void Store::priceChange(string item1, double price) {
 
 void Store::amountChange(string item1, int amountDifference) {
     int i = 0;
-    while (i < numberOfItems) {
+    while (i < *numberOfItems) {
         if (item[i].getCode() == item1) {
             item[i].setAmount(item[i].getAmount() + amountDifference);
-            i = numberOfItems;
+            i = *numberOfItems;
         }
         i++;
     }
@@ -216,22 +261,22 @@ void Store::displayName() {
     cout << name << endl;
 }
 
-int storecmp(string name1, Store store) {
-    return name1 == store.getName();
+bool storecmp(string name1, Store store) {
+    return name1 == store.name;
 }
 
 Store Store::operator + (Store store) {
     int n, i;
     Store newStore;
-    if ((this->numberOfItems + store.numberOfItems) <= Store::maxNumberOfItems) {
+    if ((*this->numberOfItems + *store.numberOfItems) <= Store::maxNumberOfItems) {
         newStore.name = this->name;
-        newStore.adress = this->adress;
-        newStore.numberOfItems = this->numberOfItems + store.numberOfItems;
-        for (n = 0; n < this->numberOfItems; n++) {
+        *newStore.adress = *this->adress;
+        *newStore.numberOfItems = *this->numberOfItems + *store.numberOfItems;
+        for (n = 0; n < *this->numberOfItems; n++) {
             newStore.item[n] = this->item[n];
         }
-        i = this->numberOfItems;
-        for (n = 0; n < store.numberOfItems; n++) {
+        i = *this->numberOfItems;
+        for (n = 0; n < *store.numberOfItems; n++) {
             newStore.item[i] = store.item[n];
             i++;
         }
@@ -242,14 +287,17 @@ Store Store::operator + (Store store) {
 
 void Store::getNumber(int *number)
 {
-    *number = numberOfItems;
+    *number = *numberOfItems;
 }
 
 void Store::getNumber(int& number)
 {
-    number = numberOfItems;
+    number = *numberOfItems;
 }
 
+void Store::setAdress(string s) {
+    *adress = s;
+}
 void Store::maxNumberOfItemsChange(int newMax) {
     Store::maxNumberOfItems = newMax;
 }
@@ -305,6 +353,7 @@ int main()
                     getchar();
                 }
                 store1[0] = Store::Store(name, adress, numberOfItems, itemName, itemCode, itemPrice, itemAmount);
+                getchar();
             }
             else if (f == "2") {
                 printf("\nВведите название магазина\n");
@@ -315,7 +364,7 @@ int main()
         i = 0;
         max = 1;
         f = "1";
-        while (f != "12") {
+        while (f != "14") {
             store1[i].displayName();
             printf("\nВведите номер следующего действия:\n");
             printf("1 - показать информацию о магазине\n");
@@ -329,7 +378,9 @@ int main()
             printf("9 - показать колличество товаров\n");
             printf("10 - изменить колличество мест для товаров в магазине\n");
             printf("11 - показать store3\n");
-            printf("12 - выйти\n");
+            printf("12 - создать копию этого магазина\n");
+            printf("13 - скопировать этот магазин в другой\n");
+            printf("14 - выйти\n");
             getline(cin, f);
             if (f == "1") {
                 store1[i].display();
@@ -370,7 +421,7 @@ int main()
                 printf("\nВведите название магазина\n");
                 getline(cin, name);
                 for (n = 0; n < max; n++) {
-                    if (storecmp(name, store1[n]) == 1) {
+                    if (storecmp(name, store1[n])) {
                         i = n;
                         n = max;
                     }
@@ -380,7 +431,7 @@ int main()
                 printf("\nВведите название магазина\n");
                 getline(cin, name);
                 for (n = 0; n < max; n++) {
-                    if (storecmp(name, store1[n]) == 1) {
+                    if (storecmp(name, store1[n])) {
                         store1[i] = store1[i] + store1[n];
                         n = max;
                     }
@@ -410,6 +461,32 @@ int main()
                 int i;
                 for (i = 0; i < 5; i++) {
                     store3[i].display();
+                }
+            }
+            else if (f == "12") {
+                printf("Мелкое (2), глубокое (1)\n");
+                getline(cin, f);
+                if (f == "1") {
+                    Store sto = store1[i];
+                    store1[i].setAdress("1");
+                    sto.display();
+
+                }
+                else {
+                    Store sto = Store(store1[i], 1);
+                    store1[i].setAdress("1");
+                    sto.display();
+                }
+            }
+            else if (f == "13") {
+                printf("\nВведите название магазина\n");
+                getline(cin, name);
+                for (n = 0; n < max; n++) {
+                    if (storecmp(name, store1[n])) {
+                        store1[n] = store1[i];
+                        store1[n].setName();
+                        n = max;
+                    }
                 }
             }
         }
@@ -511,7 +588,7 @@ int main()
                 printf("\nВведите название магазина\n");
                 getline(cin, name);
                 for (n = 0; n < max; n++) {
-                    if (storecmp(name, store2[n]) == 1) {
+                    if (storecmp(name, store2[n])) {
                         i = n;
                         n = max;
                     }
@@ -521,7 +598,7 @@ int main()
                 printf("\nВведите название магазина\n");
                 getline(cin, name);
                 for (n = 0; n < max; n++) {
-                    if (storecmp(name, store2[n]) == 1) {
+                    if (storecmp(name, store2[n])) {
                         store2[i] = store2[i] + store2[n];
                         n = max;
                     }
