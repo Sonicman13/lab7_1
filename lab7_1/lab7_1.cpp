@@ -164,7 +164,10 @@ void Store::display() {
 Store Store::operator ++ (int){
     Store newStore;
     int n;
-    if (this->numberOfItems < Store::maxNumberOfItems) {
+    try {
+        if (this->numberOfItems >= Store::maxNumberOfItems) {
+            throw 0;
+        }
         newStore.name = this->name;
         newStore.adress = this->adress;
         for (n = 0; n < this->numberOfItems; n++) {
@@ -174,8 +177,11 @@ Store Store::operator ++ (int){
         newStore.numberOfItems = ++this->numberOfItems;
         getchar();
         return newStore;
+        
     }
-    else return *this;
+    catch (int) {
+        return *this;
+    }
 }
 
 void Store::priceChange(string item1, double price) {
@@ -212,7 +218,10 @@ int storecmp(string name1, Store store) {
 Store Store::operator + (Store store) {
     int n, i;
     Store newStore;
-    if ((this->numberOfItems + store.numberOfItems) <= Store::maxNumberOfItems) {
+    try {
+        if ((this->numberOfItems + store.numberOfItems) > Store::maxNumberOfItems) {
+            throw 0;
+        }
         newStore.name = this->name;
         newStore.adress = this->adress;
         newStore.numberOfItems = this->numberOfItems + store.numberOfItems;
@@ -226,7 +235,9 @@ Store Store::operator + (Store store) {
         }
         return newStore;
     }
-    else return *this;
+    catch (int) {
+        return *this;
+    }
 }
 
 void Store::getNumber(int *number)
