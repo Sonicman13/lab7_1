@@ -9,8 +9,6 @@
 #include <string>
 #include "stdio.h"
 #include "Windows.h"
-#include "stdio.h"
-#include "time.h"
 using namespace std;
 #define N 100
 
@@ -31,17 +29,31 @@ public:
 };
 
 void Item::read() {
+    string s;
     printf("\nВведите название товара\n");
     getline(cin, name);
     printf("Введите код товара\n");
     getline(cin, code);
     do {
         printf("Введите цену\n");
-        scanf_s("%lf", &price);
+        try {
+            getline(cin, s);
+            price = stod(s);
+        }
+        catch (...) {
+            price = -1;
+        }
+        
     } while (price < 0);
     do {
         printf("Введите колличество товара\n");
-        scanf_s("%d", &amount);
+        try {
+            getline(cin, s);
+            amount = stoi(s);
+        }
+        catch (...) {
+            amount = -1;
+        }
     } while (amount < 0);
 }
 
@@ -267,11 +279,23 @@ int main()
                 getline(cin, itemCode[numberOfItems]);
                 do {
                     printf("Введите цену\n");
-                    scanf_s("%lf", &itemPrice[numberOfItems]);
+                    try {
+                        getline(cin, s);
+                        itemPrice[numberOfItems] = stod(s);
+                    }
+                    catch (...) {
+                        itemPrice[numberOfItems] = -1;
+                    }
                 } while (itemPrice[numberOfItems] < 0);
                 do {
                     printf("Введите колличество товара\n");
-                    scanf_s("%d", &itemAmount[numberOfItems]);
+                    try {
+                        getline(cin, s);
+                        itemAmount[numberOfItems] = stoi(s);
+                    }
+                    catch (...) {
+                        itemAmount[numberOfItems] = -1;
+                    }
                 } while (itemAmount[numberOfItems] < 0);
                 numberOfItems++;
                 printf("Добавить еще один товар?(1 - да, все остальные символы - нет)\n");
@@ -309,7 +333,13 @@ int main()
                 getline(cin, code);
                 do {
                     printf("Введите новую цену\n");
-                    scanf_s("%lf", &price);
+                    try {
+                        getline(cin, s);
+                        price = stod(s);
+                    }
+                    catch (...) {
+                        price = -1;
+                    }
                 } while (price < 0);
                 getchar();
                 store1[i].priceChange(code, price);
@@ -318,7 +348,13 @@ int main()
                 printf("\nВведите код товара\n");
                 getline(cin, code);
                 printf("Введите на сколько изменилось колличество товара(если увеличилость - положительное число, если уменьшилось - отрицательное)\n");
-                scanf_s("%d", &amountDifference);
+                try {
+                    getline(cin, s);
+                    amountDifference = stoi(s);
+                }
+                catch (...) {
+                    amountDifference = 0;
+                }
                 getchar();
                 store1[i].amountChange(code, amountDifference);
             }
@@ -401,11 +437,24 @@ int main()
                 getline(cin, itemCode[numberOfItems]);
                 do {
                     printf("Введите цену\n");
+                    try {
+                        getline(cin, s);
+                        itemPrice[numberOfItems] = stod(s);
+                    }
+                    catch (...) {
+                        itemPrice[numberOfItems] = -1;
+                    }
                     scanf_s("%lf", &itemPrice[numberOfItems]);
                 } while (itemPrice[numberOfItems] < 0);
                 do {
                     printf("Введите колличество товара\n");
-                    scanf_s("%d", &itemAmount[numberOfItems]);
+                    try {
+                        getline(cin, s);
+                        itemAmount[numberOfItems] = stoi(s);
+                    }
+                    catch (...) {
+                        itemAmount[numberOfItems] = -1;
+                    }
                 } while (itemAmount[numberOfItems] < 0);
                 numberOfItems++;
                 printf("Добавить еще один товар?(1 - да, все остальные символы - нет)\n");
@@ -443,7 +492,13 @@ int main()
                 getline(cin, code);
                 do {
                     printf("Введите новую цену\n");
-                    scanf_s("%lf", &price);
+                    try {
+                        getline(cin, s);
+                        price = stod(s);
+                    }
+                    catch (...) {
+                        price = -1;
+                    }
                 } while (price < 0);
                 getchar();
                 store2[i].priceChange(code, price);
@@ -452,7 +507,13 @@ int main()
                 printf("\nВведите код товара\n");
                 getline(cin, code);
                 printf("Введите на сколько изменилось колличество товара(если увеличилость - положительное число, если уменьшилось - отрицательное)\n");
-                scanf_s("%d", &amountDifference);
+                try {
+                    getline(cin, s);
+                    amountDifference = stoi(s);
+                }
+                catch (...) {
+                    amountDifference = 0;
+                }
                 getchar();
                 store2[i].amountChange(code, amountDifference);
             }
