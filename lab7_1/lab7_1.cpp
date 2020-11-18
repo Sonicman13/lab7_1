@@ -258,8 +258,8 @@ int main()
     setlocale(LC_ALL, "RUS");
     SetConsoleCP(1251);
     SetConsoleOutputCP(1251);
-    class Store store1[10], * store2;
-    int amountDifference, numberOfItems, itemAmount[N], i, max, n, *g;
+    class Store store1[5][10], * store2;
+    int amountDifference, numberOfItems, itemAmount[N], i, max, n, *g, max1[10], i1;
     double price, itemPrice[N];
     string s, s1[N], code, name, adress, itemCode[N], itemName[N], f;
     printf("Работать с переменной, указателем или указателем на массив?(1 - переменная, 2 - указатель)\n");
@@ -273,7 +273,7 @@ int main()
         printf("Использовать или read чтобы ввести данные(1 - read, все остальные символы - init)\n");
         getline(cin, f);
         if (f == "1") {
-            store1[0].read();
+            store1[0][0].read();
         }
         else {
             printf("\nВведите название магазина\n");
@@ -313,13 +313,13 @@ int main()
                 getline(cin, f);
                 getchar();
             }
-            store1[0].init(name, adress, numberOfItems, itemName, itemCode, itemPrice, itemAmount);
+            store1[0][0].init(name, adress, numberOfItems, itemName, itemCode, itemPrice, itemAmount);
         }
         i = 0;
         max = 1;
+        max1[0] = 1;
         f = "1";
         while (f != "11") {
-            store1[i].displayName();
             printf("\nВведите номер следующего действия:\n");
             printf("1 - показать информацию о магазине\n");
             printf("2 - добавить новый вид товара\n");
@@ -334,12 +334,22 @@ int main()
             printf("11 - выйти\n");
             getline(cin, f);
             if (f == "1") {
-                store1[i].display();
+                printf("\nСеть магазинов %d\n", i+1);
+                for (n = 0; n < max1[i]; n++) {
+                    printf("Магазин %d", n+1);
+                    store1[i][n].display();
+                }
             }
             else if (f == "2") {
-                store1[i] = store1[i]++;
+                printf("\nВведите номер магазина\n");
+                scanf_s("%d", &n);
+                getchar();
+                store1[i][n-1] = store1[i][n-1]++;
             }
             else if (f == "3") {
+                printf("\nВведите номер магазина\n");
+                scanf_s("%d", &n);
+                getchar();
                 printf("\nВведите код товара\n");
                 getline(cin, code);
                 do {
@@ -353,9 +363,12 @@ int main()
                     }
                 } while (price < 0);
                 getchar();
-                store1[i].priceChange(code, price);
+                store1[i][n-1].priceChange(code, price);
             }
             else if (f == "4") {
+                printf("\nВведите номер магазина\n");
+                scanf_s("%d", &n);
+                getchar();
                 printf("\nВведите код товара\n");
                 getline(cin, code);
                 printf("Введите на сколько изменилось колличество товара(если увеличилость - положительное число, если уменьшилось - отрицательное)\n");
@@ -367,36 +380,54 @@ int main()
                     amountDifference = 0;
                 }
                 getchar();
-                store1[i].amountChange(code, amountDifference);
+                store1[i][n-1].amountChange(code, amountDifference);
             }
             else if (f == "5") {
-                store1[max].read();
-                i = max;
-                max++;
+                printf("\nНовая сеть магазинов (1), новый магазин в данной сети магазинов (2)\n");
+                scanf_s("%d", &n);
+                getchar();
+                if (n == 1) {
+                    store1[max][0].read();
+                    i = max;
+                    max++;
+                    max1[i] = 1;
+                }
+                else {
+                    store1[i][max1[i]].read();
+                    max1[i]++;
+                }
 
             }
             else if (f == "6") {
                 for (n = 0; n < max; n++) {
-                    store1[n].displayName();
+                    printf("\nСеть магазинов %d\n", n + 1);
+                    for (i1 = 0; i1 < max1[n]; i1++) {
+                        printf("Магазин %d\n", i1 + 1);
+                        store1[n][i1].display();
+                    }
+                    
                 }
             }
             else if (f == "7") {
-                printf("\nВведите название магазина\n");
-                getline(cin, name);
-                for (n = 0; n < max; n++) {
-                    if (storecmp(name, store1[n]) == 1) {
-                        i = n;
-                        n = max;
-                    }
-                }
+                printf("\nВведите сеть магазинов\n");
+                scanf_s("%d", &n);
+                getchar();
+                i = n - 1;
             }
             else if (f == "8") {
-                printf("\nВведите название магазина\n");
+                printf("\nВведите название магазина который надо изменить\n");
                 getline(cin, name);
-                for (n = 0; n < max; n++) {
-                    if (storecmp(name, store1[n]) == 1) {
-                        store1[i] = store1[i] + store1[n];
-                        n = max;
+                for (n = 0; n < max1[i]; n++) {
+                    if (storecmp(name, store1[i][n]) == 1) {
+                        printf("\nВведите название магазина который надо прибавить\n");
+                        getline(cin, name);
+                        for (i1 = 0; i1 < max1[i]; i1++) {
+                            if (storecmp(name, store1[i][i1]) == 1) {
+                                store1[i][n] = store1[i][n] + store1[n][i1];
+                                i1 = max1[i];
+                            }
+                        }
+                        n = max1[i];
                     }
                 }
             }
@@ -405,12 +436,12 @@ int main()
                 getline(cin, s);
                 if (s == "1")
                 {
-                    store1[i].getNumber(g);
+                    store1[i][0].getNumber(g);
                     printf("%d\n", *g);
                 }
                 else
                 {
-                    store1[i].getNumber(&n);
+                    store1[i][0].getNumber(&n);
                     printf("%d\n", n);
                 }
             }
@@ -580,6 +611,10 @@ int main()
             }
         }
         delete[] store2;
+    }
+
+    else {
+        
     }
     return 0;
 }
