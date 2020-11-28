@@ -22,11 +22,14 @@ public:
     void read();
     Item(string code1, string name1, double price1, int amount1);
     Item();
-    void display();
+    virtual void display();
     void setPrice(double price1);
     void setAmount(int amount1);
     string getCode();
     int getAmount();
+    bool exists();
+    string getName();
+    double getPrice();
 };
 
 void Item::read() {
@@ -96,6 +99,23 @@ int Item::getAmount() {
     return amount;
 }
 
+string Item::getName() {
+    return name;
+}
+
+double Item::getPrice() {
+    return price;
+}
+
+bool Item::exists() {
+    if (amount > 0) {
+        display();
+        return true;
+    }
+    else {
+        return false;
+    }
+}
 
 class Game : public Item {
 private:
@@ -108,6 +128,7 @@ public:
     void read(int d);
     void display();
     void add();
+    void operator = (Item b);
 };
 
 Game::Game()
@@ -178,6 +199,16 @@ void Game::add(){
     }
     printf("Введите платформу на которой доступна игра\n");
     getline(cin, platforms[i]);
+}
+
+void Game::operator = (Item b) {
+    this->name = b.getName();
+    this->code = b.getCode();
+    this->price = b.getPrice();
+    this->amount = b.getAmount();
+    this->release[0] = this->release[1] = this->release[2] = 0;
+    this->platforms[0] = "-";
+    this->publisher = "-";
 }
 
 class Platform : public Item {
@@ -292,6 +323,8 @@ public:
     void getNumber(int* number);
     void getNumber(int& number);
     static void maxNumberOfItemsChange(int newMax);
+    bool itemExists(string code);
+    void itemToGame(string codeItem, string codeGame);
 };
 
 int Store::maxNumberOfItems = 10;
@@ -582,6 +615,62 @@ void Store::add(string code)
     }
 }
 
+bool Store::itemExists(string code) {
+    int i, f;
+    i = f = 0;
+    bool z;
+    z = false;
+    while (i < numberOfItems) {
+        if (item[i].getCode() == code) {
+            z = item[i].exists();
+            i = numberOfItems;
+            f = 1;
+        }
+        i++;
+    }
+    i = 0;
+    if (f == 0) {
+        while (i < numberOfGames) {
+            if (game[i].getCode() == code) {
+                z = game[i].exists();
+                i = numberOfGames;
+                f = 1;
+            }
+            i++;
+        }
+    }
+    i = 0;
+    if (f == 0) {
+        while (i < numberOfPlatforms) {
+            if (platform[i].getCode() == code) {
+                z = platform[i].exists();
+                i = numberOfPlatforms;
+                f = 1;
+            }
+            i++;
+        }
+    }
+    return z;
+}
+
+void Store::itemToGame(string codeItem, string codeGame) {
+    int i, i1;
+    i = i1 = 0;
+    while (i < numberOfItems) {
+        if (item[i].getCode() == codeItem) {
+            while (i1 < numberOfGames) {
+                if (game[i1].getCode() == codeGame) {
+                    game[i1] = item[i];
+                    i1 = numberOfGames;
+                }
+                i1++;
+            }
+            i = numberOfItems;
+        }
+        i++;
+    }
+}
+
 void Store::getNumber(int *number)
 {
     *number = numberOfItems;
@@ -606,7 +695,8 @@ int main()
     class Platform platform1[5];
     int amountDifference, numberOfItems, itemAmount, i, max, n, *g, numberOfGames, numberOfPlatforms, release[3], d;
     double price, itemPrice;
-    string s, s1[N], code, name, adress, itemCode, itemName, f, platforms[10], publisher, components[10], plusPlatforms[10];
+    bool z;
+    string s, s1[N], code, name, adress, itemCode, itemName, f, platforms[10], publisher, components[10], plusPlatforms[10], code1, code2;
     printf("Работать с переменной, указателем или указателем на массив?(1 - переменная, 2 - указатель)\n");
     getline(cin, f);
 
@@ -764,7 +854,7 @@ int main()
         i = 0;
         max = 1;
         f = "1";
-        while (f != "11") {
+        while (f != "12") {
             store1[i].displayName();
             printf("\nВведите номер следующего действия:\n");
             printf("1 - показать информацию о магазине\n");
@@ -776,8 +866,9 @@ int main()
             printf("7 - сменить магазин\n");
             printf("8 - сложить магазины\n");
             printf("9 - добавить комплектующие к консоли или платформы на которых доступна игра\n");
-            printf("10 - изменить колличество мест для товаров в магазине\n");
-            printf("11 - выйти\n");
+            printf("10 - проверить остался ли товар\n");
+            printf("11 - присвоить item к game\n");
+            printf("12 - выйти\n");
             getline(cin, f);
             if (f == "1") {
                 store1[i].display();
@@ -852,9 +943,19 @@ int main()
                 store1[i].add(code);
             }
             else if (f == "10") {
-                printf("Введите колличество\n");
-                scanf_s("%d", &numberOfItems);
-                Store::maxNumberOfItemsChange(numberOfItems);
+                printf("Введите код товара\n");
+                getline(cin, code);
+                z = store1[i].itemExists(code);
+                if (z) {
+                    printf("Товар есть\n");
+                }
+            }
+            else if (f == "11") {
+                printf("Введите код товара\n");
+                getline(cin, code1);
+                printf("Введите код игры\n");
+                getline(cin, code2);
+                store1[i].itemToGame(code1, code2);
             }
         }
     }
