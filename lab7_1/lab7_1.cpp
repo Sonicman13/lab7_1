@@ -9,6 +9,8 @@
 #include <string>
 #include "stdio.h"
 #include "Windows.h"
+#include <vector>
+#include <algorithm>
 using namespace std;
 #define N 100
 
@@ -300,11 +302,11 @@ private:
     string adress;
     int numberOfItems;
     static int maxNumberOfItems;
-    class Item item[N];
+    vector <Item> item;
     int numberOfGames;
-    class Game game[5];
+    vector <Game> game;
     int numberOfPlatforms;
-    class Platform platform[5];
+    vector <Platform> platform;
 public:
     void read();
     Store(string name, string adress, int numberOfItems, Item item[], int numberOfGames, Game game[], int numberOfPlatforms, Platform platform[]);
@@ -320,16 +322,15 @@ public:
     }
     Store operator + (Store store);
     void add(string code);
-    void getNumber(int* number);
-    void getNumber(int& number);
-    static void maxNumberOfItemsChange(int newMax);
-    bool itemExists(string code);
-    void itemToGame(string codeItem, string codeGame);
+    void sortPrice();
 };
 
 int Store::maxNumberOfItems = 10;
 
 void Store::read() {
+    Item item1;
+    Game game1;
+    Platform platform1;
     char f;
     int i;
     printf("\nВведите название магазина\n");
@@ -340,7 +341,8 @@ void Store::read() {
     printf("Добавить товар?(1 - да, все остальные символы - нет)\n");
     f = _getche();
     while (f == '1' && numberOfItems<Store::maxNumberOfItems) {
-        item[numberOfItems].read();
+        item1.read();
+        item.push_back(item1);
         numberOfItems++;
         printf("Добавить еще один товар?(1 - да, все остальные символы -нет)\n");
         f = _getche();
@@ -350,7 +352,8 @@ void Store::read() {
     printf("Добавить игру?(1 - да, все остальные символы - нет)\n");
     f = _getche();
     while (f == '1') {
-        game[numberOfGames].read(1);
+        game1.read(1);
+        game.push_back(game1);
         numberOfGames++;
         printf("Добавить еще одну игру?(1 - да, все остальные символы -нет)\n");
         f = _getche();
@@ -360,7 +363,8 @@ void Store::read() {
     printf("Добавить консоль?(1 - да, все остальные символы - нет)\n");
     f = _getche();
     while (f == '1') {
-        platform[numberOfPlatforms].read(1);
+        platform1.read(1);
+        platform.push_back(platform1);
         numberOfPlatforms++;
         printf("Добавить еще одну консоль?(1 - да, все остальные символы -нет)\n");
         f = _getche();
@@ -375,15 +379,15 @@ Store::Store(string name, string adress, int numberOfItems, Item item[], int num
         this->adress = adress;
         this->numberOfItems = numberOfItems;
         for (i = 0; i < numberOfItems; i++) {
-            this->item[i] = item[i];
+            this->item.push_back(item[i]);
         }
         this->numberOfGames = numberOfGames;
         for (i = 0; i < numberOfGames; i++) {
-            this->game[i] = game[i];
+            this->game.push_back(game[i]);
         }
         this->numberOfPlatforms = numberOfPlatforms;
         for (i = 0; i < numberOfPlatforms; i++) {
-            this->platform[i] = platform[i];
+            this->platform.push_back(platform[i]);
         }
     }
 }
@@ -432,26 +436,32 @@ Store Store::operator ++ (int){
         newStore.numberOfGames = this->numberOfGames;
         newStore.numberOfPlatforms = this->numberOfPlatforms;
         for (n = 0; n < this->numberOfItems; n++) {
-            newStore.item[n] = this->item[n];
+            newStore.item.push_back(this->item[n]);
         }
         for (n = 0; n < this->numberOfGames; n++) {
-            newStore.game[n] = this->game[n];
+            newStore.game.push_back(this->game[n]);
         }
         for (n = 0; n < this->numberOfPlatforms; n++) {
-            newStore.platform[n] = this->platform[n];
+            newStore.platform.push_back(this->platform[n]);
         }
         printf("Добавить товар (1), игру (2), консоль (3)?\n");
         getline(cin, f);
         if (f == "1") {
-            newStore.item[this->numberOfItems].read();
+            Item item1;
+            item1.read();
+            newStore.item.push_back(item1);
             newStore.numberOfItems = ++this->numberOfItems;
         }
         if (f == "2") {
-            newStore.game[this->numberOfGames].read(1);
+            Game game1;
+            game1.read(1);
+            newStore.game.push_back(game1);
             newStore.numberOfGames = ++this->numberOfGames;
         }
         if (f == "3") {
-            newStore.platform[this->numberOfPlatforms].read(1);
+            Platform platform1;
+            platform1.read(1);
+            newStore.platform.push_back(platform1);
             newStore.numberOfPlatforms = ++this->numberOfPlatforms;
         }
         getchar();
@@ -463,72 +473,46 @@ Store Store::operator ++ (int){
     }
 }
 
-void Store::priceChange(string item1, double price) {
-    int i, f;
-    i = f = 0;
-    while (i < numberOfItems) {
-        if (item[i].getCode() == item1) {
-            item[i].setPrice(price);
-            i = numberOfItems;
-            f = 1;
-        }
-        i++;
+void Store::priceChange(string code, double price) {
+    vector <Item> :: iterator item1;
+    item1 = find_if(item.begin(), item.end(), [code](Item x) { return x.getCode() == code; });
+    if (item1 != item.end()) {
+        item1->setPrice(price);
     }
-    i = 0;
-    if (f == 0) {
-        while (i < numberOfGames) {
-            if (game[i].getCode() == item1) {
-                game[i].setPrice(price);
-                i = numberOfGames;
-                f = 1;
-            }
-            i++;
+    else {
+        vector <Game> ::iterator game1;
+        game1 = find_if(game.begin(), game.end(), [code](Game x) { return x.getCode() == code; });
+        if (game1 != game.end()) {
+            game1->setPrice(price);
         }
-    }
-    i = 0;
-    if (f == 0) {
-        while (i < numberOfPlatforms) {
-            if (platform[i].getCode() == item1) {
-                platform[i].setPrice(price);
-                i = numberOfPlatforms;
-                f = 1;
+        else {
+            vector <Platform> ::iterator platform1;
+            platform1 = find_if(platform.begin(), platform.end(), [code](Platform x) { return x.getCode() == code; });
+            if (platform1 != platform.end()) {
+                platform1->setPrice(price);
             }
-            i++;
         }
     }
 }
 
-void Store::amountChange(string item1, int amountDifference) {
-    int i, f;
-    i = f = 0;
-    while (i < numberOfItems) {
-        if (item[i].getCode() == item1) {
-            item[i].setAmount(item[i].getAmount() + amountDifference);
-            i = numberOfItems;
-            f = 1;
-        }
-        i++;
+void Store::amountChange(string code, int amountDifference) {
+    vector <Item> ::iterator item1;
+    item1 = find_if(item.begin(), item.end(), [&](Item x) { return x.getCode() == code; });
+    if (item1 != item.end()) {
+        item1->setAmount(item1->getAmount() + amountDifference);
     }
-    i = 0;
-    if (f == 0) {
-        while (i < numberOfGames) {
-            if (game[i].getCode() == item1) {
-                game[i].setAmount(game[i].getAmount() + amountDifference);
-                i = numberOfGames;
-                f = 1;
-            }
-            i++;
+    else {
+        vector <Game> ::iterator game1;
+        game1 = find_if(game.begin(), game.end(), [&](Game x) { return x.getCode() == code; });
+        if (game1 != game.end()) {
+            game1->setAmount(game1->getAmount() + amountDifference);
         }
-    }
-    i = 0;
-    if (f == 0) {
-        while (i < numberOfPlatforms) {
-            if (platform[i].getCode() == item1) {
-                platform[i].setAmount(platform[i].getAmount() + amountDifference);
-                i = numberOfPlatforms;
-                f = 1;
+        else {
+            vector <Platform> ::iterator platform1;
+            platform1 = find_if(platform.begin(), platform.end(), [&](Platform x) { return x.getCode() == code; });
+            if (platform1 != platform.end()) {
+                platform1->setAmount(platform1->getAmount() + amountDifference);
             }
-            i++;
         }
     }
 }
@@ -553,29 +537,29 @@ Store Store::operator + (Store store) {
         newStore.adress = this->adress;
         newStore.numberOfItems = this->numberOfItems + store.numberOfItems;
         for (n = 0; n < this->numberOfItems; n++) {
-            newStore.item[n] = this->item[n];
+            newStore.item.push_back(this->item[n]);
         }
         i = this->numberOfItems;
         for (n = 0; n < store.numberOfItems; n++) {
-            newStore.item[i] = store.item[n];
+            newStore.item.push_back(store.item[n]);
             i++;
         }
         newStore.numberOfGames = this->numberOfGames + store.numberOfGames;
         for (n = 0; n < this->numberOfGames; n++) {
-            newStore.game[n] = this->game[n];
+            newStore.game.push_back(this->game[n]);
         }
         i = this->numberOfGames;
         for (n = 0; n < store.numberOfGames; n++) {
-            newStore.game[i] = store.game[n];
+            newStore.game.push_back(store.game[n]);
             i++;
         }
         newStore.numberOfPlatforms = this->numberOfPlatforms + store.numberOfPlatforms;
         for (n = 0; n < this->numberOfPlatforms; n++) {
-            newStore.platform[n] = this->platform[n];
+            newStore.platform.push_back(this->platform[n]);
         }
         i = this->numberOfPlatforms;
         for (n = 0; n < store.numberOfPlatforms; n++) {
-            newStore.platform[i] = store.platform[n];
+            newStore.platform.push_back(store.platform[n]);
             i++;
         }
         return newStore;
@@ -587,103 +571,36 @@ Store Store::operator + (Store store) {
 
 void Store::add(string code)
 {
-    int i, f;
-    i = f = 0;
-    while (i < numberOfGames)
-    {
-        if (game[i].getCode() == code)
-        {
-            game[i].add();
-            i = numberOfGames;
-            f = 1;
-        }
-        i++;
+    vector <Game> ::iterator game1;
+    game1 = find_if(game.begin(), game.end(), [&](Game x) { return x.getCode() == code; });
+    if (game1 != game.end()) {
+        game1->add();
     }
-    if (f == 0)
-    {
-        i = 0;
-        while (i < numberOfPlatforms)
-        {
-            if (platform[i].getCode() == code)
-            {
-                platform[i].add();
-                i = numberOfPlatforms;
-                f = 1;
-            }
-            i++;
+    else {
+        vector <Platform> ::iterator platform1;
+        platform1 = find_if(platform.begin(), platform.end(), [&](Platform x) { return x.getCode() == code; });
+        if (platform1 != platform.end()) {
+            platform1->add();
         }
     }
 }
 
-bool Store::itemExists(string code) {
-    int i, f;
-    i = f = 0;
-    bool z;
-    z = false;
-    while (i < numberOfItems) {
-        if (item[i].getCode() == code) {
-            z = item[i].exists();
-            i = numberOfItems;
-            f = 1;
-        }
-        i++;
+void Store::sortPrice() {
+    int f;
+    printf("Сортировать по возростанию(1) или по убыванию(2) цены?\n");
+    scanf_s("%d", &f);
+    if (f == 1) {
+        sort(item.begin(), item.end(), [](Item x1, Item x2) {return x1.getPrice() > x2.getPrice(); });
+        sort(game.begin(), game.end(), [](Game x1, Game x2) {return x1.getPrice() > x2.getPrice(); });
+        sort(platform.begin(), platform.end(), [](Platform x1, Platform x2) {return x1.getPrice() > x2.getPrice(); });
     }
-    i = 0;
-    if (f == 0) {
-        while (i < numberOfGames) {
-            if (game[i].getCode() == code) {
-                z = game[i].exists();
-                i = numberOfGames;
-                f = 1;
-            }
-            i++;
-        }
-    }
-    i = 0;
-    if (f == 0) {
-        while (i < numberOfPlatforms) {
-            if (platform[i].getCode() == code) {
-                z = platform[i].exists();
-                i = numberOfPlatforms;
-                f = 1;
-            }
-            i++;
-        }
-    }
-    return z;
-}
-
-void Store::itemToGame(string codeItem, string codeGame) {
-    int i, i1;
-    i = i1 = 0;
-    while (i < numberOfItems) {
-        if (item[i].getCode() == codeItem) {
-            while (i1 < numberOfGames) {
-                if (game[i1].getCode() == codeGame) {
-                    game[i1] = item[i];
-                    i1 = numberOfGames;
-                }
-                i1++;
-            }
-            i = numberOfItems;
-        }
-        i++;
+    else {
+        sort(item.begin(), item.end(), [](Item x1, Item x2) {return x1.getPrice() < x2.getPrice(); });
+        sort(game.begin(), game.end(), [](Game x1, Game x2) {return x1.getPrice() < x2.getPrice(); });
+        sort(platform.begin(), platform.end(), [](Platform x1, Platform x2) {return x1.getPrice() < x2.getPrice(); });
     }
 }
 
-void Store::getNumber(int *number)
-{
-    *number = numberOfItems;
-}
-
-void Store::getNumber(int& number)
-{
-    number = numberOfItems;
-}
-
-void Store::maxNumberOfItemsChange(int newMax) {
-    Store::maxNumberOfItems = newMax;
-}
 int main()
 {
     setlocale(LC_ALL, "RUS");
@@ -854,7 +771,7 @@ int main()
         i = 0;
         max = 1;
         f = "1";
-        while (f != "12") {
+        while (f != "11") {
             store1[i].displayName();
             printf("\nВведите номер следующего действия:\n");
             printf("1 - показать информацию о магазине\n");
@@ -866,9 +783,8 @@ int main()
             printf("7 - сменить магазин\n");
             printf("8 - сложить магазины\n");
             printf("9 - добавить комплектующие к консоли или платформы на которых доступна игра\n");
-            printf("10 - проверить остался ли товар\n");
-            printf("11 - присвоить item к game\n");
-            printf("12 - выйти\n");
+            printf("10 - сортировка по цене\n");
+            printf("11 - выйти\n");
             getline(cin, f);
             if (f == "1") {
                 store1[i].display();
@@ -943,19 +859,7 @@ int main()
                 store1[i].add(code);
             }
             else if (f == "10") {
-                printf("Введите код товара\n");
-                getline(cin, code);
-                z = store1[i].itemExists(code);
-                if (z) {
-                    printf("Товар есть\n");
-                }
-            }
-            else if (f == "11") {
-                printf("Введите код товара\n");
-                getline(cin, code1);
-                printf("Введите код игры\n");
-                getline(cin, code2);
-                store1[i].itemToGame(code1, code2);
+                store1[i].sortPrice();
             }
         }
     }
