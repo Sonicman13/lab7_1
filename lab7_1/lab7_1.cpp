@@ -590,14 +590,14 @@ void Store::sortPrice() {
     printf("Сортировать по возростанию(1) или по убыванию(2) цены?\n");
     scanf_s("%d", &f);
     if (f == 1) {
-        sort(item.begin(), item.end(), [](Item x1, Item x2) {return x1.getPrice() > x2.getPrice(); });
-        sort(game.begin(), game.end(), [](Game x1, Game x2) {return x1.getPrice() > x2.getPrice(); });
-        sort(platform.begin(), platform.end(), [](Platform x1, Platform x2) {return x1.getPrice() > x2.getPrice(); });
-    }
-    else {
         sort(item.begin(), item.end(), [](Item x1, Item x2) {return x1.getPrice() < x2.getPrice(); });
         sort(game.begin(), game.end(), [](Game x1, Game x2) {return x1.getPrice() < x2.getPrice(); });
         sort(platform.begin(), platform.end(), [](Platform x1, Platform x2) {return x1.getPrice() < x2.getPrice(); });
+    }
+    else {
+        sort(item.begin(), item.end(), [](Item x1, Item x2) {return x1.getPrice() > x2.getPrice(); });
+        sort(game.begin(), game.end(), [](Game x1, Game x2) {return x1.getPrice() > x2.getPrice(); });
+        sort(platform.begin(), platform.end(), [](Platform x1, Platform x2) {return x1.getPrice() > x2.getPrice(); });
     }
 }
 
